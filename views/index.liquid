@@ -1,14 +1,67 @@
 {% render 'partials/head.liquid' %}
 
-<article>
-  <header>
-    <h1>Hallo</h1>
-    <p>mijn naam is</p>
-  </header>
+  <div class="layout-container">
 
-  <p>{{ person.name }}</p>
+    <!-- HOBBIES -->
+    <article class="hobbys">
+      <dl class="hobbytitle">
+        <h1>Hobby's</h1>
+      </dl>
+      <p class="hobbylist">- Gamen</p>
+      <p class="hobbylist">- Muziek maken/bewerken</p>
+      <p class="hobbylist">- Afspreken met vrienden</p>
+      <p class="hobbylist">- Games modden/hacken</p>
+      <p class="hobbylist">- Online met mensen interacteren, vooral op <span class="discord">Discord</span></p>
+    </article>
 
-  <footer></footer>
-</article>
+    <!-- PROFIELKAART -->
+    <article class="profile-card-example">
+      <header class="profile-card-example-header">
+        <h2 id="profile-name">{{ person.name }}</h2>
+      </header>
+
+      <img id="profile-img" src="20250427_145611.jpg" alt="" width="800" height="800" class="profile-card-example-img">
+
+      <dl class="profile-card-example-dl">
+        <p id="profile-bio"><br>Ik ben 19 jaar, en woon in Heemskerk</p>
+      </dl>
+
+      <p id="profile-bio2" class="desc2">En dan nu een aantal kwaliteiten;<br><br>
+        Ik kan goed samenwerken, ik ben rustig en een goeie doorzetter. <br><br>
+        Mijn vooropleiding was SD/Software Developer (N4) op het Talland College.
+      </p>
+    </article>
+
+    <!-- GAME & CONSOLE -->
+    <div class="game-container">
+      <article class="gaming_header">
+        <h2 class="game-header-text">Favoriete game</h2>
+        <br>
+        <img 
+          src="Bananza.jpg"
+          id="Bananza_icn"
+          data-original="Bananza.jpg"
+          data-gif="gif/donkey-kong-oh-banana-crop.gif"
+          data-duration="2230"
+          alt="Klik op mij!"
+          width="220" height="220" 
+          class="gaming_img" 
+          onclick="play('bananza')">
+          <audio id="bananza" src="./snd/oh-banana-donkey-kong-bananza.mp3"></audio>
+      </article>
+
+      <article class="console_header">
+        <h2 class="console-header-text">Favoriete console</h2>
+        <br>
+        <img src="Switch2.png" alt="" width="250" height="200" onclick="play('nsclick')">
+        <audio id="nsclick" src="./snd/Nintendo_Switch_Click_Sound.mp3"></audio>
+        <br>
+        <img src="NS2_text.png" alt="" width="200" height="200" class="NS2_text">
+      </article>
+    </div>
+
+  </div>
+
+<script src="script.js"></script>
 
 {% render 'partials/foot.liquid' %}
