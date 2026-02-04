@@ -5,53 +5,19 @@ let ScreenContent = document.querySelector('.switch2-screen-content');
 let Switch2Logo = document.querySelector('#switch2-logo');
 let HomeIcon = document.querySelector('#home-icon');
 let HomeButton2 = document.querySelector('#home-button2');
-let HomeComplete = document.querySelector('.power');
+let powerButton = document.querySelector('.power');
 let VCicon = document.querySelector('#c');
 let cButton = document.querySelector('#c-button');
 let cButtonAll = document.querySelector('#c-button-all');
 let Crossfade = document.querySelector('.crossfade');
 let mainBlocks = document.querySelectorAll('.block-content');
 let borderBlocks = document.querySelectorAll('.block-border');
+let MKWorld = document.querySelector('.MKWorld');
+let messageOverlay = document.querySelector('.screen-overlay');
+let overlayCloseBtn = document.querySelector('.closeBtn');
 let isBooting = false;
 
 let SettingsButton = document.querySelector('#settings');
-
-HomeComplete.addEventListener('click', function (e) {
-    if (isBooting) return;
-    e.preventDefault();
-    let switchContainer = document.querySelector('.Switch2');
-    HomeButton2.classList.add('home-active');
-    borderBlocks.forEach(b => b.classList.remove('active-block'));
-    switchContainer.classList.remove('stop-animation');
-    setTimeout(() => {
-        switchContainer.style.translate = '';
-        switchContainer.style.rotate = '';
-        switchContainer.style.animation = ''; 
-    }, 1000);
-    mainBlocks.forEach(block => {
-      block.style.pointerEvents = 'none';
-    });
-
-    requestAnimationFrame(() => {
-        const allAnimations = document.getAnimations();
-        allAnimations.forEach(anim => {
-            if (anim.animationName && (anim.animationName.includes('unlock') || anim.animationName.includes('logo'))) {
-                anim.playbackRate = -5;
-                anim.play();
-            }
-        });
-    });
-    document.getElementById('Left-Joycon').classList.remove('animate-click');
-    document.getElementById('Right-Joycon').classList.remove('animate-click');
-    Switch2Logo.style.cursor = 'pointer';
-    setTimeout(() => {
-        unlockScreen.classList.remove('unlocked');
-        Switch2display.classList.remove('tablet-unlocked');
-        ScreenContent.classList.remove('console-unlocked');
-        HomeButton2.classList.remove('home-active');
-        Switch2Logo.classList.remove('logo-unlock');
-    }, 100);
-});
 
 Switch2Logo.addEventListener('click', function () {
     if (isBooting || Switch2Logo.classList.contains('logo-unlock')) return;
@@ -103,11 +69,51 @@ Switch2Logo.addEventListener('click', function () {
     }, 5350);
 });
 
+powerButton.addEventListener('click', function (e) {
+    if (isBooting) return;
+    e.preventDefault();
+    let switchContainer = document.querySelector('.Switch2');
+    HomeIcon.classList.remove('home-active');
+    HomeButton2.classList.remove('home-active');
+    VCicon.classList.remove('vc-active');
+    cButton.classList.remove('vc-active');
+    borderBlocks.forEach(b => b.classList.remove('active-block'));
+    switchContainer.classList.remove('stop-animation');
+    setTimeout(() => {
+        switchContainer.style.translate = '';
+        switchContainer.style.rotate = '';
+        switchContainer.style.animation = ''; 
+    }, 1000);
+    mainBlocks.forEach(block => {
+      block.style.pointerEvents = 'none';
+    });
+
+    requestAnimationFrame(() => {
+        const allAnimations = document.getAnimations();
+        allAnimations.forEach(anim => {
+            if (anim.animationName && (anim.animationName.includes('unlock') || anim.animationName.includes('logo'))) {
+                anim.playbackRate = -5;
+                anim.play();
+            }
+        });
+    });
+    document.getElementById('Left-Joycon').classList.remove('animate-click');
+    document.getElementById('Right-Joycon').classList.remove('animate-click');
+    Switch2Logo.style.cursor = 'pointer';
+    setTimeout(() => {
+        unlockScreen.classList.remove('unlocked');
+        Switch2display.classList.remove('tablet-unlocked');
+        ScreenContent.classList.remove('console-unlocked');
+        HomeButton2.classList.remove('home-active');
+        Switch2Logo.classList.remove('logo-unlock');
+    }, 100);
+});
+
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 let initialSoundBuffer, blockSoundBuffer, settingsSoundBuffer, launchSoundBuffer, gamechatSoundBuffer;
 let nxonlineSoundBuffer, albumSoundBuffer, controllerSoundBuffer, eshopSoundBuffer, 
-    gameshareSoundBuffer, newsSoundBuffer, powerSoundBuffer, settingsButtonSoundBuffer, cardsSoundBuffer;
+    gameshareSoundBuffer, newsSoundBuffer, powerSoundBuffer, settingsButtonSoundBuffer, cardsSoundBuffer, backSoundBuffer;
 
 async function loadAllSounds() {
     try {
@@ -125,7 +131,8 @@ async function loadAllSounds() {
             fetch('snd/settings/news.wav'),
             fetch('snd/settings/power.wav'),
             fetch('snd/settings/settings.wav'),
-            fetch('snd/settings/virtual_gamecards.wav')
+            fetch('snd/settings/virtual_gamecards.wav'),
+            fetch('snd/settings/back.wav')
         ]);
         
         const data = await Promise.all(responses.map(res => res.arrayBuffer()));
@@ -144,6 +151,7 @@ async function loadAllSounds() {
         powerSoundBuffer          = await audioCtx.decodeAudioData(data[11]);
         settingsButtonSoundBuffer = await audioCtx.decodeAudioData(data[12]);
         cardsSoundBuffer          = await audioCtx.decodeAudioData(data[13]);
+        backSoundBuffer          = await audioCtx.decodeAudioData(data[14]);
 
     } catch (err) {
     }
@@ -309,4 +317,19 @@ allSettings.forEach(option => {
             }
         }, 300);
     });
+});
+
+const gameLaunchSound = new Audio('snd/fire_game.mp3');
+const closeSound = new Audio('snd/back.wav');
+
+overlayCloseBtn.addEventListener('click', function () {
+    messageOverlay.classList.remove('is-active');
+    closeSound.play();
+});
+
+MKWorld.addEventListener('click', function () {
+    setTimeout(() => {
+        messageOverlay.classList.add('is-active');
+        gameLaunchSound.play();
+    }, 300);
 });

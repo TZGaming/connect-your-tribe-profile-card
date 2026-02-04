@@ -10,9 +10,9 @@ body, html {
   background-color: rgb(24, 24, 24);
   font-family: SwitchUI;
   color: rgb(0, 179, 255);
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none;      /* Internet Explorer/Edge */
-  user-select: none;          /* Standaard (Chrome, Firefox, Opera) */
+  /* -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none; */
 }
 
 @font-face {
@@ -159,6 +159,58 @@ body {
   gap: 10%;
   width: 43vw;
   height: 40vw;
+}
+
+.screen-overlay {
+  position: fixed;
+  display: flex;
+  align-self: center;
+  width: 85%;
+  height: 85%;
+  scale: 0;
+  right: 8%;
+  border-radius: 15px;
+  padding: 2%;
+  background-color: rgb(26, 26, 26);
+  z-index: 9;
+  flex-direction: row;
+  gap: 20px;
+  opacity: 0;
+  scale: 0;
+  pointer-events: none;
+  transition: all .2s ease-in-out;
+
+  img {
+    display: flex;
+    justify-self: flex-end;
+
+    &.closeBtn {
+      width: 1.5vw;
+      height: 1.5vw;
+      aspect-ratio: 1 / 1;
+      transition: all .2s;
+    }
+  }
+}
+
+.overlay-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 1vw;
+}
+
+img.closeBtn:hover {
+  cursor: pointer;
+  scale: 0.9;
+}
+
+.screen-overlay.is-active {
+  opacity: 1;
+  scale: 1;
+  pointer-events: auto;
 }
 
 .unlocked {
