@@ -110,8 +110,8 @@ Switch2Logo.addEventListener('click', function () {
                     source.start(0);
                 } catch (err) {
                 }
+          });
     });
-});
 
         let isPlayingC = false;
         cButtonAll.addEventListener('click', function () {
@@ -133,7 +133,10 @@ async function loadAllSounds() {
     try {
         const [res1, res2] = await Promise.all([
             fetch('snd/hover_1.wav'),
-            fetch('snd/hover_2.wav')
+            fetch('snd/hover_2.wav'),
+            fetch('snd/launch.wav'),
+            fetch('snd/gamechat.wav'),
+            fetch('snd/initial_boot.mp3')
         ]);
         
         const [data1, data2] = await Promise.all([
@@ -144,7 +147,6 @@ async function loadAllSounds() {
         blockSoundBuffer = await audioCtx.decodeAudioData(data1);
         settingsSoundBuffer = await audioCtx.decodeAudioData(data2);
     } catch (err) {
-        console.error("Audio kon niet laden:", err);
     }
 }
 
