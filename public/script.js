@@ -125,13 +125,12 @@ Switch2Logo.addEventListener('click', function () {
 });
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let blockSoundBuffer;
-let settingsSoundBuffer;
+let initialSoundBuffer, blockSoundBuffer, settingsSoundBuffer, launchSoundBuffer, gamechatSoundBuffer;
 
-// 1. Laad beide geluiden in aparte buffers
 async function loadAllSounds() {
     try {
-        const [res1, res2] = await Promise.all([
+        // Haal alle bestanden op
+        const responses = await Promise.all([
             fetch('snd/hover_1.wav'),
             fetch('snd/hover_2.wav'),
             fetch('snd/launch.wav'),
@@ -139,13 +138,15 @@ async function loadAllSounds() {
             fetch('snd/initial_boot.mp3')
         ]);
         
-        const [data1, data2] = await Promise.all([
-            res1.arrayBuffer(),
-            res2.arrayBuffer()
-        ]);
+        // Zet ze allemaal om naar arrayBuffers
+        const data = await Promise.all(responses.map(res => res.arrayBuffer()));
 
-        blockSoundBuffer = await audioCtx.decodeAudioData(data1);
-        settingsSoundBuffer = await audioCtx.decodeAudioData(data2);
+        // Decodeer ze naar audio buffers
+        blockSoundBuffer = await audioCtx.decodeAudioData(data[0]);
+        settingsSoundBuffer = await audioCtx.decodeAudioData(data[1]);
+        launchSoundBuffer = await audioCtx.decodeAudioData(data[2]);
+        gamechatSoundBuffer = await audioCtx.decodeAudioData(data[3]);
+        initialSoundBuffer = await audioCtx.decodeAudioData(data[4]);
     } catch (err) {
     }
 }
