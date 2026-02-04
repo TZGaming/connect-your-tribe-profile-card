@@ -13,6 +13,8 @@ let mainBlocks = document.querySelectorAll('.block-content');
 let borderBlocks = document.querySelectorAll('.block-border');
 let isBooting = false;
 
+const allBlocks = document.querySelectorAll('.block-content-wrapper');
+
 HomeComplete.addEventListener('click', function (e) {
     if (isBooting) return;
     e.preventDefault();
@@ -88,10 +90,20 @@ Switch2Logo.addEventListener('click', function () {
             block.style.pointerEvents = 'all';
 
             block.addEventListener('click', async function () {
+
                 if (audioCtx.state === 'suspended') {
                     await audioCtx.resume();
                 }
 
+                allBlocks.forEach(block => {
+                    block.addEventListener('click', function() {
+                    this.classList.add('game-click');
+
+                setTimeout(() => {
+                    this.classList.remove('game-click');
+                }, 200);
+    });
+})
                 const rect = block.getBoundingClientRect();
                 const centerX = rect.left + rect.width / 2;
                 const screenWidth = window.innerWidth;
