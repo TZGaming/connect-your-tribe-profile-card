@@ -1,10 +1,11 @@
+let Switch2All = document.querySelector('.Switch2');
 let Switch2display = document.querySelector('#Switch2Console');
 let unlockScreen = document.querySelector('.screen-unlock');
 let ScreenContent = document.querySelector('.switch2-screen-content');
 let Switch2Logo = document.querySelector('#switch2-logo');
 let HomeIcon = document.querySelector('#home-icon');
 let HomeButton2 = document.querySelector('#home-button2');
-let HomeComplete = document.querySelector('#complete-home-button');
+let HomeComplete = document.querySelector('.power');
 let VCicon = document.querySelector('#c');
 let cButton = document.querySelector('#c-button');
 let cButtonAll = document.querySelector('#c-button-all');
@@ -13,7 +14,7 @@ let mainBlocks = document.querySelectorAll('.block-content');
 let borderBlocks = document.querySelectorAll('.block-border');
 let isBooting = false;
 
-const allBlocks = document.querySelectorAll('.block-content-wrapper');
+let SettingsButton = document.querySelector('#settings');
 
 HomeComplete.addEventListener('click', function (e) {
     if (isBooting) return;
@@ -30,12 +31,7 @@ HomeComplete.addEventListener('click', function (e) {
     mainBlocks.forEach(block => {
       block.style.pointerEvents = 'none';
     });
-    setTimeout(() => {
-      Crossfade.classList.add('activate-crossfade');
-      setTimeout(() => {
-        Crossfade.classList.remove('activate-crossfade');
-      }, 1000);
-    }, 700);
+
     requestAnimationFrame(() => {
         const allAnimations = document.getAnimations();
         allAnimations.forEach(anim => {
@@ -47,6 +43,7 @@ HomeComplete.addEventListener('click', function (e) {
     });
     document.getElementById('Left-Joycon').classList.remove('animate-click');
     document.getElementById('Right-Joycon').classList.remove('animate-click');
+    Switch2Logo.style.cursor = 'pointer';
     setTimeout(() => {
         unlockScreen.classList.remove('unlocked');
         Switch2display.classList.remove('tablet-unlocked');
@@ -58,107 +55,96 @@ HomeComplete.addEventListener('click', function (e) {
 
 Switch2Logo.addEventListener('click', function () {
     if (isBooting || Switch2Logo.classList.contains('logo-unlock')) return;
+    
     isBooting = true;
     let switchContainer = document.querySelector('.Switch2');
     let style = window.getComputedStyle(switchContainer);
+
+    Switch2Logo.style.cursor = 'default';
+    
     switchContainer.style.translate = style.translate;
     switchContainer.style.rotate = style.rotate;
     switchContainer.style.animation = 'none';
+
     requestAnimationFrame(() => {
         switchContainer.classList.add('stop-animation');
         switchContainer.style.translate = '';
         switchContainer.style.rotate = '';
     });
+
     Switch2Logo.classList.add('logo-unlock');
     unlockScreen.classList.add('unlocked');
     Switch2display.classList.add('tablet-unlocked');
+    Switch2All.style.animation = ''; 
+    Switch2All.classList.add('tablet-unlocked-click');
     ScreenContent.classList.add('console-unlocked');
+    
     document.querySelector('#Left-Joycon').classList.add('animate-click');
     document.querySelector('#Right-Joycon').classList.add('animate-click');
-    setTimeout(function() {
-        new Audio('snd/initial_boot.mp3').play();
+
+    setTimeout(() => {
+        if (initialSoundBuffer) {
+            const source = audioCtx.createBufferSource();
+            source.buffer = initialSoundBuffer;
+            source.connect(audioCtx.destination);
+            source.start(0);
+        }
     }, 400);
-    setTimeout(function() {
+
+    setTimeout(() => {
         isBooting = false;
         HomeIcon.classList.add('home-active');
         HomeButton2.classList.add('home-active');
         VCicon.classList.add('vc-active');
         cButton.classList.add('vc-active');
+        Switch2All.classList.remove('tablet-unlocked-click');
 
-
-        mainBlocks.forEach(block => {
-            block.style.pointerEvents = 'all';
-
-            block.addEventListener('click', async function () {
-
-                if (audioCtx.state === 'suspended') {
-                    await audioCtx.resume();
-                }
-
-                allBlocks.forEach(block => {
-                    block.addEventListener('click', function() {
-                    this.classList.add('game-click');
-
-                setTimeout(() => {
-                    this.classList.remove('game-click');
-                }, 200);
-    });
-})
-                const rect = block.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const screenWidth = window.innerWidth;
-                const panValue = (centerX / screenWidth) * 2 - 1;
-        
-                panner.pan.value = panValue;
-
-                try {
-                    const response = await fetch('snd/launch.wav');
-                    const arrayBuffer = await response.arrayBuffer();
-                    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-                    const source = audioCtx.createBufferSource();
-                    source.buffer = audioBuffer;
-                    source.connect(panner);
-                    source.start(0);
-                } catch (err) {
-                }
-          });
-    });
-
-        let isPlayingC = false;
-        cButtonAll.addEventListener('click', function () {
-          if (isPlayingC) return;
-          isPlayingC = true;
-          const audio = new Audio('snd/gamechat.wav');
-          audio.play();
-          setTimeout(() => { isPlayingC = false; }, 500); 
-        });
+        mainBlocks.forEach(block => block.style.pointerEvents = 'all');
     }, 5350);
 });
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
 let initialSoundBuffer, blockSoundBuffer, settingsSoundBuffer, launchSoundBuffer, gamechatSoundBuffer;
+let nxonlineSoundBuffer, albumSoundBuffer, controllerSoundBuffer, eshopSoundBuffer, 
+    gameshareSoundBuffer, newsSoundBuffer, powerSoundBuffer, settingsButtonSoundBuffer, cardsSoundBuffer;
 
 async function loadAllSounds() {
     try {
-        // Haal alle bestanden op
         const responses = await Promise.all([
             fetch('snd/hover_1.wav'),
             fetch('snd/hover_2.wav'),
             fetch('snd/launch.wav'),
             fetch('snd/gamechat.wav'),
-            fetch('snd/initial_boot.mp3')
+            fetch('snd/initial_boot.mp3'),
+            fetch('snd/settings/nx_online.wav'),
+            fetch('snd/settings/album.wav'),
+            fetch('snd/settings/controller.wav'),
+            fetch('snd/settings/eshop.wav'),
+            fetch('snd/settings/gameshare.wav'),
+            fetch('snd/settings/news.wav'),
+            fetch('snd/settings/power.wav'),
+            fetch('snd/settings/settings.wav'),
+            fetch('snd/settings/virtual_gamecards.wav')
         ]);
         
-        // Zet ze allemaal om naar arrayBuffers
         const data = await Promise.all(responses.map(res => res.arrayBuffer()));
 
-        // Decodeer ze naar audio buffers
-        blockSoundBuffer = await audioCtx.decodeAudioData(data[0]);
-        settingsSoundBuffer = await audioCtx.decodeAudioData(data[1]);
-        launchSoundBuffer = await audioCtx.decodeAudioData(data[2]);
-        gamechatSoundBuffer = await audioCtx.decodeAudioData(data[3]);
-        initialSoundBuffer = await audioCtx.decodeAudioData(data[4]);
+        blockSoundBuffer          = await audioCtx.decodeAudioData(data[0]);
+        settingsSoundBuffer       = await audioCtx.decodeAudioData(data[1]);
+        launchSoundBuffer         = await audioCtx.decodeAudioData(data[2]);
+        gamechatSoundBuffer       = await audioCtx.decodeAudioData(data[3]);
+        initialSoundBuffer        = await audioCtx.decodeAudioData(data[4]);
+        nxonlineSoundBuffer       = await audioCtx.decodeAudioData(data[5]);
+        albumSoundBuffer          = await audioCtx.decodeAudioData(data[6]);
+        controllerSoundBuffer     = await audioCtx.decodeAudioData(data[7]);
+        eshopSoundBuffer          = await audioCtx.decodeAudioData(data[8]);
+        gameshareSoundBuffer      = await audioCtx.decodeAudioData(data[9]);
+        newsSoundBuffer           = await audioCtx.decodeAudioData(data[10]);
+        powerSoundBuffer          = await audioCtx.decodeAudioData(data[11]);
+        settingsButtonSoundBuffer = await audioCtx.decodeAudioData(data[12]);
+        cardsSoundBuffer          = await audioCtx.decodeAudioData(data[13]);
+
     } catch (err) {
     }
 }
@@ -168,14 +154,46 @@ loadAllSounds();
 const panner = new StereoPannerNode(audioCtx, { pan: 0 });
 panner.connect(audioCtx.destination);
 
-// Universele reset functie
+const settingOptionsClick = document.querySelectorAll('.settings-options');
+
+settingOptionsClick.forEach(option => {
+    option.addEventListener('click', async function () {
+        if (isBooting || !Switch2display.classList.contains('tablet-unlocked')) return;
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+        const rect = option.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const panValue = (centerX / window.innerWidth) * 2 - 1;
+        panner.pan.value = panValue;
+
+        let selectedBuffer = null;
+        
+        if (this.classList.contains('nx-online'))      selectedBuffer = nxonlineSoundBuffer;
+        else if (this.classList.contains('album'))     selectedBuffer = albumSoundBuffer;
+        else if (this.classList.contains('eshop'))     selectedBuffer = eshopSoundBuffer;
+        else if (this.classList.contains('news'))      selectedBuffer = newsSoundBuffer;
+        else if (this.classList.contains('gamechat'))  selectedBuffer = gamechatSoundBuffer;
+        else if (this.classList.contains('gameshare')) selectedBuffer = gameshareSoundBuffer;
+        else if (this.classList.contains('controller')) selectedBuffer = controllerSoundBuffer;
+        else if (this.classList.contains('virtualcards')) selectedBuffer = cardsSoundBuffer;
+        else if (this.classList.contains('settings'))  selectedBuffer = settingsButtonSoundBuffer;
+        else if (this.classList.contains('power'))     selectedBuffer = powerSoundBuffer;
+
+        if (selectedBuffer) {
+            const source = audioCtx.createBufferSource();
+            source.buffer = selectedBuffer;
+            source.connect(panner);
+            source.start(0);
+        }
+    });
+});
+
 function clearAllSelections() {
     borderBlocks.forEach(b => b.classList.remove('active-block'));
     const settingsBorders = document.querySelectorAll('.settings-border');
     settingsBorders.forEach(b => b.classList.remove('active-setting'));
 }
 
-// Audio Helper met buffer keuze
 function playHoverSound(element, buffer) {
     if (buffer) {
         if (audioCtx.state === 'suspended') {
@@ -195,6 +213,47 @@ function playHoverSound(element, buffer) {
         source.start(0);
     }
 }
+
+mainBlocks.forEach(block => {
+    block.addEventListener('click', async function () {
+        if (isBooting || !Switch2display.classList.contains('tablet-unlocked')) return;
+
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+        const rect = block.getBoundingClientRect();
+        const panValue = ((rect.left + rect.width / 2) / window.innerWidth) * 2 - 1;
+        panner.pan.value = panValue;
+
+        if (launchSoundBuffer) {
+            const source = audioCtx.createBufferSource();
+            source.buffer = launchSoundBuffer;
+            source.connect(panner);
+            source.start(0);
+        }
+
+        const parentBorder = block.closest('.block-border');
+        if (parentBorder) {
+            parentBorder.classList.add('game-click');
+            setTimeout(() => parentBorder.classList.remove('game-click'), 200);
+        }
+    });
+});
+
+let isPlayingC = false;
+cButtonAll.addEventListener('click', function () {
+    if (isBooting || !Switch2display.classList.contains('tablet-unlocked') || isPlayingC) return;
+
+    isPlayingC = true;
+    
+    if (gamechatSoundBuffer) {
+        const source = audioCtx.createBufferSource();
+        source.buffer = gamechatSoundBuffer;
+        source.connect(audioCtx.destination);
+        source.start(0);
+    }
+
+    setTimeout(() => { isPlayingC = false; }, 500); 
+});
 
 mainBlocks.forEach((block) => {
     block.addEventListener('mouseenter', () => {
@@ -224,5 +283,30 @@ settingsOptions.forEach((option) => {
 
             playHoverSound(option, settingsSoundBuffer);
         }
+    });
+});
+
+const allSettings = document.querySelectorAll('.settings-options');
+
+allSettings.forEach(option => {
+    option.addEventListener('click', function () {
+        this.classList.add('inner-glow-pulse');
+
+        const img = this.querySelector('img');
+        if (img) {
+            img.classList.add('setting-default-click');
+        }
+
+        if (this.classList.contains('settings')) {
+            this.classList.add('settings-icn-rotate');
+        }
+
+        setTimeout(() => {
+            this.classList.remove('inner-glow-pulse');
+            this.classList.remove('settings-icn-rotate');
+            if (img) {
+                img.classList.remove('setting-default-click');
+            }
+        }, 300);
     });
 });

@@ -132,7 +132,7 @@
 
   <!-- Overlay / unlock layer -->
   <div class="screen-unlock">
-    <svg id="switch2-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 354.5 316.688">
+    <svg id="switch2-logo" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 354.5 316.688">
       <defs>
         <style>
           .cls-1 {
@@ -150,15 +150,12 @@
     </svg>
   </div>
 
-  <!-- Echte scherm content -->
   <div class="screen-content">
 
-    <!-- Header -->
     <div class="screen-header">
       <p>{{ "now" | date: "%H:%M" }}</p>
     </div>
 
-    <!-- Game blocks -->
     <div class="block-wrapper">
 
       <div class="block-content-wrapper">
@@ -199,24 +196,20 @@
 
     </div>
 
-    <!-- Settings -->
     <div class="settings-wrapper">
       <div class="settings-bar">
-
-        <div class="settings-border"><div class="settings-options">1</div></div>
-        <div class="settings-border"><div class="settings-options">2</div></div>
-        <div class="settings-border"><div class="settings-options">3</div></div>
-        <div class="settings-border"><div class="settings-options">4</div></div>
-        <div class="settings-border"><div class="settings-options">5</div></div>
-        <div class="settings-border"><div class="settings-options">6</div></div>
-        <div class="settings-border"><div class="settings-options">7</div></div>
-        <div class="settings-border"><div class="settings-options">8</div></div>
-        <div class="settings-border"><div class="settings-options">9</div></div>
-        <div class="settings-border"><div class="settings-options">10</div></div>
-
+        <div class="settings-border"><div class="settings-options nx-online"><img src="img/settings/nx_online.png" alt=""></div></div>
+        <div class="settings-border"><div class="settings-options gamechat"><img src="img/settings/gamechat.png" alt=""></div></div>
+        <div class="settings-border"><div class="settings-options news"><img src="img/settings/news.png" alt=""></div></div>
+        <div class="settings-border"><div class="settings-options eshop"><img src="img/settings/eshop.png" alt=""></div></div>
+        <div class="settings-border"><div class="settings-options album"><img src="img/settings/album.png" alt=""></div></div>
+        <div class="settings-border"><div class="settings-options gameshare"><img src="img/settings/gameshare.png" alt=""></div></div>
+        <div class="settings-border"><div class="settings-options controller"><img src="img/settings/controller_pairing.png" alt=""></div></div>
+        <div class="settings-border"><div class="settings-options virtualcards"><img src="img/settings/virtual_gamecards.png" alt=""></div></div>
+        <div class="settings-border"><div class="settings-options settings"><img id="settings" src="img/settings/settings.png" alt=""></div></div>
+        <div class="settings-border"><div class="settings-options power"><img src="img/settings/power.png" alt=""></div></div>
       </div>
     </div>
-
   </div>
 </div>
 
