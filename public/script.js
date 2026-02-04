@@ -2,40 +2,38 @@ let Switch2display = document.querySelector('#Switch2Console');
 let unlockScreen = document.querySelector('.screen-unlock');
 let ScreenContent = document.querySelector('.switch2-screen-content');
 let Switch2Logo = document.querySelector('#switch2-logo');
+let HomeIcon = document.querySelector('#home-icon');
 let HomeButton2 = document.querySelector('#home-button2');
 let HomeComplete = document.querySelector('#complete-home-button');
+let VCicon = document.querySelector('#c');
+let cButton = document.querySelector('#c-button');
+let cButtonAll = document.querySelector('#c-button-all');
 let Crossfade = document.querySelector('.crossfade');
-
-// Deze variabele houdt bij of de animatie nog bezig is
+let mainBlocks = document.querySelectorAll('.block-content');
+let borderBlocks = document.querySelectorAll('.block-border');
 let isBooting = false;
 
-// STAP 1: De Home Button listener staat nu ALTIJD aan, 
-// maar voert de code alleen uit als isBooting 'false' is.
 HomeComplete.addEventListener('click', function (e) {
-    if (isBooting) {
-        return;
-    }
-
+    if (isBooting) return;
     e.preventDefault();
     let switchContainer = document.querySelector('.Switch2');
-
-    // --- DE VLOEIENDE RESET LOGICA ---
+    HomeButton2.classList.add('home-active');
+    borderBlocks.forEach(b => b.classList.remove('active-block'));
     switchContainer.classList.remove('stop-animation');
-
     setTimeout(() => {
         switchContainer.style.translate = '';
         switchContainer.style.rotate = '';
         switchContainer.style.animation = ''; 
     }, 1000);
-    
+    mainBlocks.forEach(block => {
+      block.style.pointerEvents = 'none';
+    });
     setTimeout(() => {
       Crossfade.classList.add('activate-crossfade');
-  
       setTimeout(() => {
         Crossfade.classList.remove('activate-crossfade');
       }, 1000);
     }, 700);
-
     requestAnimationFrame(() => {
         const allAnimations = document.getAnimations();
         allAnimations.forEach(anim => {
@@ -45,10 +43,8 @@ HomeComplete.addEventListener('click', function (e) {
             }
         });
     });
-
     document.getElementById('Left-Joycon').classList.remove('animate-click');
     document.getElementById('Right-Joycon').classList.remove('animate-click');
-
     setTimeout(() => {
         unlockScreen.classList.remove('unlocked');
         Switch2display.classList.remove('tablet-unlocked');
@@ -58,41 +54,160 @@ HomeComplete.addEventListener('click', function (e) {
     }, 100);
 });
 
-// STAP 2: De Logo klik start het proces en zet de blokkade aan
 Switch2Logo.addEventListener('click', function () {
-    // Zet de blokkade direct aan
+    if (isBooting || Switch2Logo.classList.contains('logo-unlock')) return;
     isBooting = true;
-
     let switchContainer = document.querySelector('.Switch2');
-    
     let style = window.getComputedStyle(switchContainer);
-    let currentTranslate = style.translate;
-    let currentRotate = style.rotate;
-
-    switchContainer.style.translate = currentTranslate;
-    switchContainer.style.rotate = currentRotate;
+    switchContainer.style.translate = style.translate;
+    switchContainer.style.rotate = style.rotate;
     switchContainer.style.animation = 'none';
-
     requestAnimationFrame(() => {
         switchContainer.classList.add('stop-animation');
         switchContainer.style.translate = '';
         switchContainer.style.rotate = '';
     });
-
     Switch2Logo.classList.add('logo-unlock');
     unlockScreen.classList.add('unlocked');
     Switch2display.classList.add('tablet-unlocked');
     ScreenContent.classList.add('console-unlocked');
-
     document.querySelector('#Left-Joycon').classList.add('animate-click');
     document.querySelector('#Right-Joycon').classList.add('animate-click');
-    
     setTimeout(function() {
         new Audio('snd/initial_boot.mp3').play();
     }, 400);
-
-    // STAP 3: Pas na 5,35 seconden heffen we de blokkade op
     setTimeout(function() {
         isBooting = false;
+        HomeIcon.classList.add('home-active');
+        HomeButton2.classList.add('home-active');
+        VCicon.classList.add('vc-active');
+        cButton.classList.add('vc-active');
+
+
+        mainBlocks.forEach(block => {
+            block.style.pointerEvents = 'all';
+
+            block.addEventListener('click', async function () {
+                if (audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
+
+                const rect = block.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const screenWidth = window.innerWidth;
+                const panValue = (centerX / screenWidth) * 2 - 1;
+        
+                panner.pan.value = panValue;
+
+                try {
+                    const response = await fetch('snd/launch.wav');
+                    const arrayBuffer = await response.arrayBuffer();
+                    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+                    const source = audioCtx.createBufferSource();
+                    source.buffer = audioBuffer;
+                    source.connect(panner);
+                    source.start(0);
+                } catch (err) {
+                }
+    });
+});
+
+        let isPlayingC = false;
+        cButtonAll.addEventListener('click', function () {
+          if (isPlayingC) return;
+          isPlayingC = true;
+          const audio = new Audio('snd/gamechat.wav');
+          audio.play();
+          setTimeout(() => { isPlayingC = false; }, 500); 
+        });
     }, 5350);
+});
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let blockSoundBuffer;
+let settingsSoundBuffer;
+
+// 1. Laad beide geluiden in aparte buffers
+async function loadAllSounds() {
+    try {
+        const [res1, res2] = await Promise.all([
+            fetch('snd/hover_1.wav'),
+            fetch('snd/hover_2.wav')
+        ]);
+        
+        const [data1, data2] = await Promise.all([
+            res1.arrayBuffer(),
+            res2.arrayBuffer()
+        ]);
+
+        blockSoundBuffer = await audioCtx.decodeAudioData(data1);
+        settingsSoundBuffer = await audioCtx.decodeAudioData(data2);
+    } catch (err) {
+        console.error("Audio kon niet laden:", err);
+    }
+}
+
+loadAllSounds();
+
+const panner = new StereoPannerNode(audioCtx, { pan: 0 });
+panner.connect(audioCtx.destination);
+
+// Universele reset functie
+function clearAllSelections() {
+    borderBlocks.forEach(b => b.classList.remove('active-block'));
+    const settingsBorders = document.querySelectorAll('.settings-border');
+    settingsBorders.forEach(b => b.classList.remove('active-setting'));
+}
+
+// Audio Helper met buffer keuze
+function playHoverSound(element, buffer) {
+    if (buffer) {
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const screenWidth = window.innerWidth;
+        const panValue = (centerX / screenWidth) * 2 - 1;
+        
+        panner.pan.value = panValue;
+
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(panner);
+        source.start(0);
+    }
+}
+
+mainBlocks.forEach((block) => {
+    block.addEventListener('mouseenter', () => {
+        if (!isBooting) {
+            const parentBorder = block.closest('.block-border');
+            
+            if (!parentBorder || parentBorder.classList.contains('active-block')) return;
+
+            clearAllSelections();
+            parentBorder.classList.add('active-block');
+
+            playHoverSound(block, blockSoundBuffer);
+        }
+    });
+});
+
+const settingsOptions = document.querySelectorAll('.settings-options');
+settingsOptions.forEach((option) => {
+    option.addEventListener('mouseenter', () => {
+        if (!isBooting) {
+            const parentBorder = option.closest('.settings-border');
+            
+            if (!parentBorder || parentBorder.classList.contains('active-setting')) return;
+
+            clearAllSelections();
+            parentBorder.classList.add('active-setting');
+
+            playHoverSound(option, settingsSoundBuffer);
+        }
+    });
 });

@@ -5,6 +5,14 @@
 body, html {
   margin: 0;
   padding: 0;
+  background-color: rgb(0, 0, 0);
+  font-family: SwitchUI;
+  color: rgb(0, 179, 255);
+}
+
+@font-face {
+  font-family: SwitchUI;
+  src: url(font/NINTENDOSWITCHUI.TTF);
 }
 
 body {
@@ -51,9 +59,8 @@ body {
   overflow: hidden;
   transform-origin: center;
   transform-box: fill-box;
-  translate: 0 0; /* Standaard in het midden */
+  translate: 0 0;
   rotate: 0deg;
-  /* Zorg dat de transitie lang genoeg is om de sprong op te vangen */
   transition: translate 0.3s ease-in-out, rotate 0.3s ease-in-out;
 
   animation: 
@@ -118,6 +125,12 @@ body {
   height: 25vw;
   display: flex;
   overflow: hidden;
+  flex-direction: column;
+  
+  align-items: flex-start;
+  justify-content: center;
+  
+  gap: 20px;
 }
 
 .screen-unlock {
@@ -187,44 +200,95 @@ body {
 .block-wrapper {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 12px;
+}
+
+.block-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  position: relative;
+  flex-shrink: 0;
+  p {
+    position: absolute;
+    top: -3vh;
+    white-space: nowrap;
+    color: #5ddcff;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+}
+
+.block-border.active-block + p, 
+.block-content-wrapper:has(.active-block) p {
+  opacity: 1;
+}
+
+.block-title {
+  position: absolute;
+  top: -45px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: .8vw;
+  color: #5ddcff;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .block-border {
-  width: 10.3vw; /* Of bijvoorbeeld 10vw */
-  aspect-ratio: 1 / 1; /* Houdt het blok vierkant */
+  width: 10.3vw;
+  height: 10.3vw;
+  aspect-ratio: 1 / 1;
+  border-radius: 1vw;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border-radius: 15px;
 }
 
 .block-border::before {
   content: "";
   position: absolute;
-  width: 15vw;
-  height: 15vw;
+  width: 17vw;
+  height: 17vw;
   background-image: linear-gradient(#5ddcff, #3c67e3 43%, #4e00c2);
   animation: spin 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.block-border.active-block::before {
+  opacity: 1;
 }
 
 .block-content {
   background-color: rgb(34, 34, 34);
-  width: 10vw; /* Gebruik percentages in plaats van vaste pixels */
-  aspect-ratio: 1 / 1; /* Houdt het blok vierkant */
-  border-radius: 14px;
+  width: 10vw;
+  aspect-ratio: 1 / 1;
   color: white;
   display: flex;
   justify-content: center;
+  border-radius: inherit;
   align-items: center;
   z-index: 1;
+  overflow: hidden;
+  img {
+    width: 97%;
+    height: 97%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover; 
+    border-radius: inherit; 
+  }
+}
+
+.block-content:has(img) {
+  background-color: #141414;
 }
 
 .block-content:hover {
   cursor: pointer;
-  background-color: rgb(24, 31, 43);
 }
 
 @keyframes spin {
@@ -232,12 +296,78 @@ body {
   to { transform: rotate(360deg); }
 }
 
-#home-button2 {
+.settings-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.settings-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: rgb(34, 34, 34);
+  border-radius: 30px;
+  padding: 8px;
+  gap: 10px;
+}
+
+.settings-options {
+  position: relative;
+  z-index: 1;
+  width: 3vw;
+  height: 3vw;
+  border-radius: 100%;
+  background-color: rgb(46, 46, 46);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.settings-options:hover {
+  cursor: pointer;
+  background-color: rgb(32, 38, 49);
+}
+
+.settings-border {
+  flex-shrink: 0;
+  position: relative;
+  width: 3.3vw;
+  height: 3.3vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%; 
+}
+
+.settings-border::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(#5ddcff, #3c67e3 43%, #4e00c2);
+  animation: spin 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  transform: scale(1.1); 
+  z-index: 0;
+  border-radius: 100%;
+}
+
+.settings-border.active-setting::before {
+  opacity: 1;
+}
+
+#home-button2,
+#home-icon {
   transition: fill .5s;
 }
 
 .home-active {
-  fill: rgba(0, 72, 255, 0.744) !important;
+  fill: rgba(0, 140, 255, 0.744) !important;
 }
 
 #complete-home-button {
@@ -245,6 +375,19 @@ body {
 }
 
 #complete-home-button:hover {
-  fill: rgba(64, 118, 255, 0.744) !important;
+  fill: rgba(110, 110, 110, 0.744) !important;
   cursor: pointer;
+}
+
+#c-button-all:hover {
+  cursor: pointer;
+}
+
+#c,
+#c-button {
+  transition: all .5s;
+}
+
+.vc-active {
+  fill: rgb(255, 153, 0) !important;
 }
