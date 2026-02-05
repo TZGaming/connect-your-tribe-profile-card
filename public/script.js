@@ -13,8 +13,10 @@ let Crossfade = document.querySelector('.crossfade');
 let mainBlocks = document.querySelectorAll('.block-content');
 let borderBlocks = document.querySelectorAll('.block-border');
 let MKWorld = document.querySelector('.MKWorld');
-let messageOverlay = document.querySelector('.screen-overlay');
-let overlayCloseBtn = document.querySelector('.closeBtn');
+let Bananza = document.querySelector('.Bananza');
+let AboutMeOverlay = document.querySelector('.about-overlay');
+let FavGameOverlay = document.querySelector('.fav-game-overlay');
+let overlayCloseBtn = document.querySelectorAll('.closeBtn');
 let isBooting = false;
 
 let SettingsButton = document.querySelector('#settings');
@@ -132,7 +134,7 @@ async function loadAllSounds() {
             fetch('snd/settings/power.wav'),
             fetch('snd/settings/settings.wav'),
             fetch('snd/settings/virtual_gamecards.wav'),
-            fetch('snd/settings/back.wav')
+            fetch('snd/back.wav')
         ]);
         
         const data = await Promise.all(responses.map(res => res.arrayBuffer()));
@@ -226,6 +228,10 @@ mainBlocks.forEach(block => {
     block.addEventListener('click', async function () {
         if (isBooting || !Switch2display.classList.contains('tablet-unlocked')) return;
 
+        if (this.classList.contains('no-interaction')) return;
+
+        if (isBooting || !Switch2display.classList.contains('tablet-unlocked')) return;
+
         if (audioCtx.state === 'suspended') await audioCtx.resume();
 
         const rect = block.getBoundingClientRect();
@@ -265,6 +271,9 @@ cButtonAll.addEventListener('click', function () {
 
 mainBlocks.forEach((block) => {
     block.addEventListener('mouseenter', () => {
+
+        if (block.classList.contains('no-interaction')) return;
+
         if (!isBooting) {
             const parentBorder = block.closest('.block-border');
             
@@ -322,14 +331,49 @@ allSettings.forEach(option => {
 const gameLaunchSound = new Audio('snd/fire_game.mp3');
 const closeSound = new Audio('snd/back.wav');
 
-overlayCloseBtn.addEventListener('click', function () {
-    messageOverlay.classList.remove('is-active');
-    closeSound.play();
+overlayCloseBtn.forEach(btn => {
+    btn.addEventListener('click', function () {
+        AboutMeOverlay.classList.remove('is-active');
+        FavGameOverlay.classList.remove('is-active');
+        
+        mainBlocks.forEach(block => block.classList.remove('no-interaction'));
+        
+        closeSound.play();
+        const video = FavGameOverlay.querySelector('video');
+        if (video) video.pause();
+    });
 });
 
 MKWorld.addEventListener('click', function () {
+    if (this.classList.contains('no-interaction')) return;
+
     setTimeout(() => {
-        messageOverlay.classList.add('is-active');
+        if (this.classList.contains('no-interaction') && !AboutMeOverlay.classList.contains('is-active')) {
+             AboutMeOverlay.classList.add('is-active');
+             mainBlocks.forEach(block => block.classList.add('no-interaction'));
+             gameLaunchSound.play();
+        } else if (!AboutMeOverlay.classList.contains('is-active')) {
+             AboutMeOverlay.classList.add('is-active');
+             mainBlocks.forEach(block => block.classList.add('no-interaction'));
+             gameLaunchSound.play();
+        }
+    }, 300);
+});
+
+Bananza.addEventListener('click', function () {
+    if (this.classList.contains('no-interaction')) return;
+
+    setTimeout(() => {
+        FavGameOverlay.classList.add('is-active');
+        mainBlocks.forEach(block => block.classList.add('no-interaction'));
+        
+        const video = FavGameOverlay.querySelector('video');
+        if (video) {
+            video.muted = false;
+            video.volume = 0.3;
+            video.currentTime = 45;
+            video.play();
+        }
         gameLaunchSound.play();
     }, 300);
 });

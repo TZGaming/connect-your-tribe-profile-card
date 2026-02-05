@@ -152,10 +152,23 @@
 
   <div class="screen-content">
 
-    <div class="screen-overlay">
+    <div class="about-overlay">
       <div class="overlay-content">
-        Hoi! Dit is een test voor de komende blokken van mijn profiel
-        <img width="40%" src="1154962416241746010.webp">
+        <p>{{ person.name }}</p>
+        <div class="aboutme">
+          <p>Mijn naam is Tom, ik ben 20 jaar en ik woon in Heemskerk. Ik vind het leuk om te gamen en om met vrienden af te spreken. <br><br>Als vooropleiding deed ik Software Development op het Talland College in Zaandam, het designen van websites vond ik zelf altijd het leukste van ICT, vandaar dat ik voor Front-end Design heb gekozen.</p>
+          <img width="30%" src="20250427_145611.jpg">
+        </div>
+      </div>
+      <img class="closeBtn" src="img/close.png">
+    </div>
+
+    <div class="fav-game-overlay">
+      <div class="overlay-content">
+        <p>Donkey Kong Bananza</p>
+          <video width="80%" autoplay muted loop>
+            <source src="video/DK_Bananza_Trailer.mp4#t=45" type="video/mp4" />
+          </video>
       </div>
       <img class="closeBtn" src="img/close.png">
     </div>
@@ -167,17 +180,17 @@
     <div class="block-wrapper">
 
       <div class="block-content-wrapper">
-        <p class="block-title">Mario Kart World</p>
+        <p class="block-title">Wie ben ik?</p>
         <div class="block-border MKWorld">
           <div class="block-content">
-            <img src="img/icon_testing/mkworld.jpg" alt="">
+            <img src="{{ person.avatar }}" alt="">
           </div>
         </div>
       </div>
 
       <div class="block-content-wrapper">
-        <p class="block-title">Donkey Kong Bananza</p>
-        <div class="block-border">
+        <p class="block-title">Favoriete game</p>
+        <div class="block-border Bananza">
           <div class="block-content">
             <img src="img/icon_testing/dk-bananza.png" alt="">
           </div>
