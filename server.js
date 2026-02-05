@@ -42,8 +42,17 @@ app.use(express.urlencoded({extended: true}))
 // Maak een GET route voor de index (meestal doe je dit in de root, als /)
 // In je visitekaartje was dit waarschijnlijk index.html
 app.get('/', async function (request, response) {
-   // Render index.liquid uit de Views map en geef de opgehaalde data mee, in een variabele genaamd person
-   response.render('index.liquid', {person: personResponseJSON.data})
+   let personData = personResponseJSON.data;
+
+   // Als custom bestaat word het omgezet naar JSON, anders word de data niet correct weergeven
+   if (typeof personData.custom === 'string') {
+      try {
+         personData.custom = JSON.parse(personData.custom);
+      } catch (e) {
+         personData.custom = {};
+      }
+   }
+   response.render('index.liquid', { person: personData });
 })
 
 app.get('/oefening/', async function (request, response) {
