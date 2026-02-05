@@ -14,8 +14,10 @@ let mainBlocks = document.querySelectorAll('.block-content');
 let borderBlocks = document.querySelectorAll('.block-border');
 let MKWorld = document.querySelector('.MKWorld');
 let Bananza = document.querySelector('.Bananza');
+let extraGames = document.querySelector('.extraGames');
 let AboutMeOverlay = document.querySelector('.about-overlay');
 let FavGameOverlay = document.querySelector('.fav-game-overlay');
+let ExtraGameOverlay = document.querySelector('.extra-games-overlay')
 let overlayCloseBtn = document.querySelectorAll('.closeBtn');
 let isBooting = false;
 
@@ -27,6 +29,9 @@ Switch2Logo.addEventListener('click', function () {
     isBooting = true;
     let switchContainer = document.querySelector('.Switch2');
     let style = window.getComputedStyle(switchContainer);
+
+    mainBlocks.forEach(block => block.classList.add('no-interaction'));
+    settingsOptions.forEach(opt => opt.classList.add('no-interaction'));
 
     Switch2Logo.style.cursor = 'default';
     
@@ -61,6 +66,8 @@ Switch2Logo.addEventListener('click', function () {
 
     setTimeout(() => {
         isBooting = false;
+        mainBlocks.forEach(block => block.classList.remove('no-interaction'));
+        settingsOptions.forEach(opt => opt.classList.remove('no-interaction'));
         HomeIcon.classList.add('home-active');
         HomeButton2.classList.add('home-active');
         VCicon.classList.add('vc-active');
@@ -79,16 +86,18 @@ powerButton.addEventListener('click', function (e) {
     HomeButton2.classList.remove('home-active');
     VCicon.classList.remove('vc-active');
     cButton.classList.remove('vc-active');
-    borderBlocks.forEach(b => b.classList.remove('active-block'));
+
+    clearAllSelections()
+
+    mainBlocks.forEach(block => block.classList.add('no-interaction'));
+    settingsOptions.forEach(opt => opt.classList.add('no-interaction'));
+
     switchContainer.classList.remove('stop-animation');
     setTimeout(() => {
         switchContainer.style.translate = '';
         switchContainer.style.rotate = '';
         switchContainer.style.animation = ''; 
     }, 1000);
-    mainBlocks.forEach(block => {
-      block.style.pointerEvents = 'none';
-    });
 
     requestAnimationFrame(() => {
         const allAnimations = document.getAnimations();
@@ -331,42 +340,52 @@ allSettings.forEach(option => {
 const gameLaunchSound = new Audio('snd/fire_game.mp3');
 const closeSound = new Audio('snd/back.wav');
 
+let isOverlayOpening = false;
+
+function openGameOverlay(overlayElement, extraAction = null) {
+    if (isOverlayOpening) return;
+    
+    isOverlayOpening = true;
+
+    mainBlocks.forEach(block => block.classList.add('no-interaction'));
+    settingsOptions.forEach(opt => opt.classList.add('no-interaction'));
+
+    setTimeout(() => {
+        overlayElement.classList.add('is-active');
+        if (extraAction) extraAction();
+        gameLaunchSound.play();
+    }, 300);
+}
+
 overlayCloseBtn.forEach(btn => {
     btn.addEventListener('click', function () {
         AboutMeOverlay.classList.remove('is-active');
         FavGameOverlay.classList.remove('is-active');
+        ExtraGameOverlay.classList.remove('is-active');
         
         mainBlocks.forEach(block => block.classList.remove('no-interaction'));
+        settingsOptions.forEach(opt => opt.classList.remove('no-interaction'));
+        
+        isOverlayOpening = false; 
         
         closeSound.play();
         const video = FavGameOverlay.querySelector('video');
-        if (video) video.pause();
+        if (video) {
+            video.pause();
+            video.currentTime = 45;
+        }
     });
 });
 
 MKWorld.addEventListener('click', function () {
     if (this.classList.contains('no-interaction')) return;
-
-    setTimeout(() => {
-        if (this.classList.contains('no-interaction') && !AboutMeOverlay.classList.contains('is-active')) {
-             AboutMeOverlay.classList.add('is-active');
-             mainBlocks.forEach(block => block.classList.add('no-interaction'));
-             gameLaunchSound.play();
-        } else if (!AboutMeOverlay.classList.contains('is-active')) {
-             AboutMeOverlay.classList.add('is-active');
-             mainBlocks.forEach(block => block.classList.add('no-interaction'));
-             gameLaunchSound.play();
-        }
-    }, 300);
+    openGameOverlay(AboutMeOverlay);
 });
 
 Bananza.addEventListener('click', function () {
     if (this.classList.contains('no-interaction')) return;
-
-    setTimeout(() => {
-        FavGameOverlay.classList.add('is-active');
-        mainBlocks.forEach(block => block.classList.add('no-interaction'));
-        
+    
+    openGameOverlay(FavGameOverlay, () => {
         const video = FavGameOverlay.querySelector('video');
         if (video) {
             video.muted = false;
@@ -374,6 +393,10 @@ Bananza.addEventListener('click', function () {
             video.currentTime = 45;
             video.play();
         }
-        gameLaunchSound.play();
-    }, 300);
+    });
+});
+
+extraGames.addEventListener('click', function () {
+    if (this.classList.contains('no-interaction')) return;
+    openGameOverlay(ExtraGameOverlay);
 });
