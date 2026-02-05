@@ -157,7 +157,7 @@
         <p>{{ person.name }}</p>
         <div class="aboutme">
           <p>Mijn naam is Tom, ik ben 20 jaar en ik woon in Heemskerk. Ik vind het leuk om te gamen en om met vrienden af te spreken. <br><br>Als vooropleiding deed ik Software Development op het Talland College in Zaandam, het designen van websites vond ik zelf altijd het leukste van ICT, vandaar dat ik voor Front-end Design heb gekozen.</p>
-          <img width="30%" alt="Tom's Profielfoto" src="20250427_145611.jpg">
+          <img alt="Tom's Profielfoto" src="20250427_145611.jpg">
         </div>
       </div>
       <img class="closeBtn" alt="Close" src="img/close.png">
@@ -166,8 +166,8 @@
     <div class="fav-game-overlay">
       <div class="overlay-content">
         <p>{{ person.custom.games.DKBananza.title }}</p>
-          <video width="80%" autoplay muted loop>
-            <source src="video/DK_Bananza_Trailer.mp4#t=45" type="video/mp4"/>
+          <video autoplay muted loop>
+            <source src="video/DK_Bananza_Trailer.mp4#t=45" type="video/mp4">
           </video>
       </div>
       <img class="closeBtn" alt="Close" src="img/close.png">
@@ -179,22 +179,22 @@
         <div class="extra-games-wrapper">
           <div class="extra-games">
             <p>{{ person.custom.games.MKWorld.title }}</p>
-            <img width="95%" src="{{ person.custom.games.MKWorld.image }}">
+            <img alt="Mario Kart World Icon" src="{{ person.custom.games.MKWorld.image }}">
           </div>
 
           <div class="extra-games">
             <p>{{ person.custom.games.KirbyAirRiders.title }}</p>
-            <img width="95%" src="{{ person.custom.games.KirbyAirRiders.image }}">
+            <img alt="Kirby Air Riders Icon" src="{{ person.custom.games.KirbyAirRiders.image }}">
           </div>
 
           <div class="extra-games">
             <p>{{ person.custom.games.MK8DX.title }}</p>
-            <img width="95%" src="{{ person.custom.games.MK8DX.image }}">
+            <img alt="Mario Kart 8 Deluxe Icon" src="{{ person.custom.games.MK8DX.image }}">
           </div>
 
           <div class="extra-games">
             <p>{{ person.custom.games.SMO.title }}</p>
-            <img width="95%" src="{{ person.custom.games.SMO.image }}">
+            <img alt="Super Mario Odyssey Icon" src="{{ person.custom.games.SMO.image }}">
           </div>
         </div>
         <p>Zoals je kan zien ben ik fan van Nintendo games! Ik ben meer een console gamer dan een PC gamer 😀.</p>
@@ -261,7 +261,6 @@
       </div>
     </div>
   </div>
-</div>
 </div>
 </div>
 

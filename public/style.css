@@ -211,6 +211,7 @@ body {
   video {
     display: flex;
     align-self: center;
+    width: 80%;
   }
 }
 
@@ -220,6 +221,9 @@ body {
   gap: 5%;
   p {
     font-size: .7vw;
+  }
+  img {
+    width: 30%;
   }
 }
 
@@ -239,6 +243,9 @@ body {
   gap: 2%;
   p {
     font-size: .7vw;
+  }
+  img {
+    width: 95%;
   }
 }
 
