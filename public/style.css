@@ -1,3 +1,15 @@
+@property --ty {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --rz {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
 *,
 *::before,
 *::after {
@@ -9,10 +21,17 @@ body, html {
   padding: 0;
   background-color: rgb(24, 24, 24);
   font-family: SwitchUI;
-  color: rgb(0, 179, 255);
+  color: #3ecceb;
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  transition: .2s;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+    body {
+        overflow-y: auto !important;
+    }
 }
 
 @font-face {
@@ -167,7 +186,8 @@ body {
 
 .about-overlay,
 .fav-game-overlay,
-.extra-games-overlay {
+.extra-games-overlay,
+.socials-overlay {
   position: fixed;
   display: flex;
   align-self: center;
@@ -175,7 +195,7 @@ body {
   height: 85%;
   scale: 0;
   right: 8%;
-  border-radius: 15px;
+  border-radius: 1vw;
   padding: 2%;
   background-color: rgb(43, 43, 43);
   z-index: 9;
@@ -197,7 +217,7 @@ body {
       width: 1.5vw;
       height: 1.5vw;
       aspect-ratio: 1 / 1;
-      transition: all .1s;
+      transition: all .2s;
     }
   }
 }
@@ -208,10 +228,18 @@ body {
   display: flex;
   flex-direction: column;
   font-size: 1vw;
+  font-weight: bold;
   video {
     display: flex;
     align-self: center;
     width: 80%;
+    border-radius: .5vw;
+  }
+  p {
+    &#gamesDesc {
+      font-size: .75vw;
+      font-weight: normal;
+    }
   }
 }
 
@@ -219,9 +247,8 @@ body {
   display: flex;
   flex-direction: row;
   gap: 5%;
-  p {
-    font-size: .7vw;
-  }
+  font-weight: normal;
+  font-size: .7vw;
   img {
     width: 30%;
   }
@@ -249,6 +276,48 @@ body {
   }
 }
 
+.social {
+  display: flex;
+  flex-direction: column;
+  gap: 2%;
+  align-items: flex-start;
+}
+
+.social-links {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2%;
+  width: 100%;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.social-links img {
+  cursor: pointer;
+
+  &#discord {
+    width: 2vw;
+  }
+
+  &#youtube,
+  &#github {
+    width: 2vw;
+    padding-right: 1%;
+    transition: .2s;
+  }
+
+  &#nintendo-acc {
+    width: 2vw;
+    cursor: default;
+  }
+}
+
 img.closeBtn:hover {
   cursor: pointer;
   scale: 0.9;
@@ -256,7 +325,8 @@ img.closeBtn:hover {
 
 .about-overlay.is-active,
 .fav-game-overlay.is-active,
-.extra-games-overlay.is-active {
+.extra-games-overlay.is-active,
+.socials-overlay.is-active {
   opacity: 1;
   scale: 1;
   pointer-events: auto;
@@ -273,18 +343,22 @@ img.closeBtn:hover {
 }
 
 .tablet-unlocked-click {
-  animation-name: unlockTabletClick;
-  animation-duration: 0.6s;
-  animation-iteration-count: 1;
-  animation-delay: 0.4s;
-  animation-timing-function: cubic-bezier(.39,.01,0,.67);
-  animation-fill-mode: forwards;
+  transform: translateY(var(--ty, 0px)) rotateZ(var(--rz, 0deg));
+  
+  animation: 
+    unlockJump 0.6s cubic-bezier(.39,.01,0,.67) 0.4s 1 forwards,
+    unlockRotate 0.6s ease-out 0.4s 1 forwards;
 }
 
-@keyframes unlockTabletClick {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-70px); }
-  100% { transform: translateY(0px); }
+@keyframes unlockJump {
+  0%, 100% { --ty: 0px; }
+  50% { --ty: -70px; }
+}
+
+@keyframes unlockRotate {
+  0%, 100% { --rz: 0deg; }
+  25% { --rz: .5deg; }
+  75% { --rz: -.5deg; }
 }
 
 .console-unlocked {
@@ -330,8 +404,9 @@ img.closeBtn:hover {
   width: 95%;
   display: flex;
   justify-content: flex-end;
+  color: white;
+  transition: .2s;
   p {
-    color: white;
     font-weight: bold;
     margin: 0;
     padding: 0;
@@ -355,7 +430,6 @@ img.closeBtn:hover {
     position: absolute;
     top: -1.25vw;
     white-space: nowrap;
-    color: #5ddcff;
     opacity: 0;
     transition: opacity 0.2s ease;
   }
@@ -373,9 +447,9 @@ img.closeBtn:hover {
   transform: translateX(-50%);
   margin: 0;
   font-size: .8vw;
-  color: #5ddcff;
   white-space: nowrap;
   pointer-events: none;
+  font-weight: bold;
 }
 
 .block-border {
@@ -421,7 +495,7 @@ img.closeBtn:hover {
 }
 
 .block-content {
-  background-color: rgb(34, 34, 34);
+  background-color: #141414;
   width: 10vw;
   aspect-ratio: 1 / 1;
   color: white;
@@ -431,6 +505,7 @@ img.closeBtn:hover {
   border-radius: .7vw;
   z-index: 1;
   overflow: hidden;
+  transition: .2s;
   img {
     width: 97%;
     height: 97%;
@@ -438,10 +513,6 @@ img.closeBtn:hover {
     object-fit: cover; 
     border-radius: .6vw;
   }
-}
-
-.block-content:has(img) {
-  background-color: #141414;
 }
 
 .block-content:hover {
@@ -482,6 +553,7 @@ img.closeBtn:hover {
   width: 100%;
   padding: 1%;
   gap: .5%;
+  transition: all .2s;
 }
 
 .settings-options {
@@ -569,6 +641,14 @@ img.closeBtn:hover {
   background-color: rgb(45, 45, 45);
 }
 
+.settings-options.darkmode-full-white:hover {
+  cursor: pointer;
+  background-color: rgb(245, 245, 245) !important;
+  &.nx-online {
+    background-color: #e40013 !important;
+  }
+}
+
 .settings-border {
   flex-shrink: 0;
   position: relative;
@@ -615,26 +695,15 @@ img.closeBtn:hover {
   opacity: 1;
 }
 
+/* SVG Button Animaties */
+
 #home-button2,
 #home-icon {
   transition: fill .5s;
 }
 
 .home-active {
-  fill: rgba(0, 140, 255, 0.744) !important;
-}
-
-#complete-home-button {
-  transition: all .1s;
-}
-
-#complete-home-button:hover {
-  fill: rgba(110, 110, 110, 0.744) !important;
-  cursor: pointer;
-}
-
-#c-button-all:hover {
-  cursor: pointer;
+  fill: #0094d5 !important;
 }
 
 #c,
@@ -643,7 +712,34 @@ img.closeBtn:hover {
 }
 
 .vc-active {
-  fill: rgb(255, 153, 0) !important;
+  fill: #d86f22 !important;
+}
+
+#complete-home-button,
+#c-button-all,
+#A-button-all,
+#B-button-all,
+#Y-button-all,
+#X-button-all,
+#plus-button,
+#minus-button,
+#capture-button-all {
+  transform-origin: center;
+  transform-box: fill-box;
+  transition: all .2s;
+}
+
+#complete-home-button:hover,
+#c-button-all:hover,
+#A-button-all:hover,
+#B-button-all:hover,
+#Y-button-all:hover,
+#X-button-all:hover,
+#plus-button:hover,
+#minus-button:hover,
+#capture-button-all:hover {
+  scale: 0.92;
+  cursor: pointer;
 }
 
 /* Settings Buttons Animaties */
@@ -692,4 +788,62 @@ img.closeBtn:hover {
         opacity: 0;
         transform: scale(1.2);
     }
+}
+
+.easter-egg {
+  position: fixed;
+  background-color: rgb(43, 43, 43);
+  bottom: -20%;
+  right: 1%;
+  padding: 1%;
+  border-radius: .7vw;
+  p {
+    font-size: 1.2vw;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.easter-egg.activate {
+  animation-name: SecretMessageActivate;
+  animation-duration: 1s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+}
+
+@keyframes SecretMessageActivate {
+  0% { bottom: -20%; }
+  25% { bottom: 2%; }
+  75% { bottom: 2%; }
+  100% { bottom: -20%; }
+}
+
+#screen {
+  transition: .2s;
+}
+
+.darkmode {
+  fill: #eeecee !important;
+  background-color: #eeecee !important;
+}
+
+.darkmode-text {
+  color: rgb(24, 24, 24) !important;
+}
+
+.darkmode-text2 {
+  color: #3ea6eb !important;
+}
+
+.darkmode-full-white {
+  background-color: white !important;
+}
+
+.darkmode-shadow {
+  box-shadow: 0px 0px 20px 7px #4e4e4e !important;
+}
+
+.inverted-img {
+    filter: invert(100%);
 }

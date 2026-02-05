@@ -1,8 +1,12 @@
+let body = document.querySelector('body');
 let Switch2All = document.querySelector('.Switch2');
 let Switch2display = document.querySelector('#Switch2Console');
+let behindScreenBackground = document.querySelector('#screen')
 let unlockScreen = document.querySelector('.screen-unlock');
 let ScreenContent = document.querySelector('.switch2-screen-content');
 let Switch2Logo = document.querySelector('#switch2-logo');
+let Time = document.querySelector('.screen-header')
+let HomeButton = document.querySelector('#complete-home-button')
 let HomeIcon = document.querySelector('#home-icon');
 let HomeButton2 = document.querySelector('#home-button2');
 let powerButton = document.querySelector('.power');
@@ -12,13 +16,19 @@ let cButtonAll = document.querySelector('#c-button-all');
 let Crossfade = document.querySelector('.crossfade');
 let mainBlocks = document.querySelectorAll('.block-content');
 let borderBlocks = document.querySelectorAll('.block-border');
+let settingsBar = document.querySelector('.settings-bar')
 let MKWorld = document.querySelector('.MKWorld');
 let Bananza = document.querySelector('.Bananza');
 let extraGames = document.querySelector('.extraGames');
+let socials = document.querySelector('.socials');
+let GitHub = document.querySelector('#github')
 let AboutMeOverlay = document.querySelector('.about-overlay');
 let FavGameOverlay = document.querySelector('.fav-game-overlay');
-let ExtraGameOverlay = document.querySelector('.extra-games-overlay')
+let ExtraGamesOverlay = document.querySelector('.extra-games-overlay')
+let socialsOverlay = document.querySelector('.socials-overlay')
 let overlayCloseBtn = document.querySelectorAll('.closeBtn');
+let SecretMessage = document.querySelector('.easter-egg')
+
 let isBooting = false;
 
 let SettingsButton = document.querySelector('#settings');
@@ -87,6 +97,8 @@ powerButton.addEventListener('click', function (e) {
     VCicon.classList.remove('vc-active');
     cButton.classList.remove('vc-active');
 
+    removeLightMode()
+
     clearAllSelections()
 
     mainBlocks.forEach(block => block.classList.add('no-interaction'));
@@ -122,7 +134,7 @@ powerButton.addEventListener('click', function (e) {
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-let initialSoundBuffer, blockSoundBuffer, settingsSoundBuffer, launchSoundBuffer, gamechatSoundBuffer, backSoundBuffer;
+let initialSoundBuffer, blockSoundBuffer, settingsSoundBuffer, launchSoundBuffer, gamechatSoundBuffer, backSoundBuffer, homeSoundBuffer;
 let nxonlineSoundBuffer, albumSoundBuffer, controllerSoundBuffer, eshopSoundBuffer, 
     gameshareSoundBuffer, newsSoundBuffer, powerSoundBuffer, settingsButtonSoundBuffer, cardsSoundBuffer;
 
@@ -143,7 +155,8 @@ async function loadAllSounds() {
             fetch('snd/settings/power.wav'),
             fetch('snd/settings/settings.wav'),
             fetch('snd/settings/virtual_gamecards.wav'),
-            fetch('snd/back.wav')
+            fetch('snd/back.wav'),
+            fetch('snd/home.wav')
         ]);
         
         const data = await Promise.all(responses.map(res => res.arrayBuffer()));
@@ -163,7 +176,7 @@ async function loadAllSounds() {
         settingsButtonSoundBuffer = await audioCtx.decodeAudioData(data[12]);
         cardsSoundBuffer          = await audioCtx.decodeAudioData(data[13]);
         backSoundBuffer          = await audioCtx.decodeAudioData(data[14]);
-
+        homeSoundBuffer          = await audioCtx.decodeAudioData(data[15]);
     } catch (err) {
     }
 }
@@ -266,6 +279,9 @@ let isPlayingC = false;
 cButtonAll.addEventListener('click', function () {
     if (isBooting || !Switch2display.classList.contains('tablet-unlocked') || isPlayingC) return;
 
+    SecretMessage.classList.add('activate');
+    cButtonAll.classList.add('no-interaction');
+
     isPlayingC = true;
     
     if (gamechatSoundBuffer) {
@@ -274,6 +290,11 @@ cButtonAll.addEventListener('click', function () {
         source.connect(audioCtx.destination);
         source.start(0);
     }
+
+    setTimeout(() => {
+        SecretMessage.classList.remove('activate');
+        cButtonAll.classList.remove('no-interaction');
+    }, 1000);
 
     setTimeout(() => { isPlayingC = false; }, 500); 
 });
@@ -317,6 +338,7 @@ const allSettings = document.querySelectorAll('.settings-options');
 allSettings.forEach(option => {
     option.addEventListener('click', function () {
         this.classList.add('inner-glow-pulse');
+        this.classList.add('no-interaction');
 
         const img = this.querySelector('img');
         if (img) {
@@ -328,6 +350,7 @@ allSettings.forEach(option => {
         }
 
         setTimeout(() => {
+            this.classList.remove('no-interaction');
             this.classList.remove('inner-glow-pulse');
             this.classList.remove('settings-icn-rotate');
             if (img) {
@@ -361,7 +384,8 @@ overlayCloseBtn.forEach(btn => {
     btn.addEventListener('click', function () {
         AboutMeOverlay.classList.remove('is-active');
         FavGameOverlay.classList.remove('is-active');
-        ExtraGameOverlay.classList.remove('is-active');
+        ExtraGamesOverlay.classList.remove('is-active');
+        socialsOverlay.classList.remove('is-active');
         
         mainBlocks.forEach(block => block.classList.remove('no-interaction'));
         settingsOptions.forEach(opt => opt.classList.remove('no-interaction'));
@@ -389,7 +413,7 @@ Bananza.addEventListener('click', function () {
         const video = FavGameOverlay.querySelector('video');
         if (video) {
             video.muted = false;
-            video.volume = 0.3;
+            video.volume = 0.4;
             video.currentTime = 45;
             video.play();
         }
@@ -398,5 +422,110 @@ Bananza.addEventListener('click', function () {
 
 extraGames.addEventListener('click', function () {
     if (this.classList.contains('no-interaction')) return;
-    openGameOverlay(ExtraGameOverlay);
+    openGameOverlay(ExtraGamesOverlay);
 });
+
+socials.addEventListener('click', function () {
+    if (this.classList.contains('no-interaction')) return;
+    openGameOverlay(socialsOverlay);
+});
+
+HomeButton.addEventListener('click', function () {
+    if (isBooting || !Switch2display.classList.contains('tablet-unlocked') || isPlayingC) return;
+
+    toggleLightMode()
+
+    HomeButton.classList.add('no-interaction');
+
+    isPlayingC = true;
+    
+    if (homeSoundBuffer) {
+        const source = audioCtx.createBufferSource();
+        source.buffer = homeSoundBuffer;
+        source.connect(audioCtx.destination);
+        source.start(0);
+    }
+
+    setTimeout(() => { isPlayingC = false; HomeButton.classList.remove('no-interaction'); }, 500); 
+});
+
+function toggleLightMode() {
+
+    body.classList.toggle('darkmode-text2');
+
+    behindScreenBackground.classList.toggle('darkmode');
+
+    mainBlocks.forEach(block => {
+        block.classList.toggle('darkmode');
+    });
+
+    Time.classList.toggle('darkmode-text');
+
+    settingsBar.classList.toggle('darkmode-full-white');
+
+    settingsOptions.forEach(opt => {
+        opt.classList.toggle('darkmode-full-white');
+    });
+
+    AboutMeOverlay.classList.toggle('darkmode-full-white');
+    AboutMeOverlay.classList.toggle('darkmode-text');
+    AboutMeOverlay.classList.toggle('darkmode-shadow');
+
+    FavGameOverlay.classList.toggle('darkmode-full-white');
+    FavGameOverlay.classList.toggle('darkmode-text');
+    FavGameOverlay.classList.toggle('darkmode-shadow');
+
+    ExtraGamesOverlay.classList.toggle('darkmode-full-white');
+    ExtraGamesOverlay.classList.toggle('darkmode-text');
+    FavGameOverlay.classList.toggle('darkmode-shadow');
+
+    socialsOverlay.classList.toggle('darkmode-full-white');
+    socialsOverlay.classList.toggle('darkmode-text');
+    FavGameOverlay.classList.toggle('darkmode-shadow');
+
+    overlayCloseBtn.forEach(btn => {
+        btn.classList.toggle('inverted-img');
+    });
+
+    GitHub.classList.toggle('inverted-img');
+}
+
+function removeLightMode() {
+    body.classList.remove('darkmode-text2');
+
+    behindScreenBackground.classList.remove('darkmode');
+
+    mainBlocks.forEach(block => {
+        block.classList.remove('darkmode');
+    });
+
+    Time.classList.remove('darkmode-text');
+
+    settingsBar.classList.remove('darkmode-full-white');
+
+    settingsOptions.forEach(opt => {
+        opt.classList.remove('darkmode-full-white');
+    });
+
+    AboutMeOverlay.classList.remove('darkmode-full-white');
+    AboutMeOverlay.classList.remove('darkmode-text');
+    AboutMeOverlay.classList.remove('darkmode-shadow');
+
+    FavGameOverlay.classList.remove('darkmode-full-white');
+    FavGameOverlay.classList.remove('darkmode-text');
+    FavGameOverlay.classList.remove('darkmode-shadow');
+
+    ExtraGamesOverlay.classList.remove('darkmode-full-white');
+    ExtraGamesOverlay.classList.remove('darkmode-text');
+    FavGameOverlay.classList.remove('darkmode-shadow');
+
+    socialsOverlay.classList.remove('darkmode-full-white');
+    socialsOverlay.classList.remove('darkmode-text');
+    FavGameOverlay.classList.remove('darkmode-shadow');
+
+    overlayCloseBtn.forEach(btn => {
+        btn.classList.remove('inverted-img');
+    });
+
+    GitHub.classList.remove('inverted-img');
+}
