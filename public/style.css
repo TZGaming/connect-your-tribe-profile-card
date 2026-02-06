@@ -1,3 +1,8 @@
+:root {
+  --colors-default-L: rgb(116,235,255);
+  --colors-default-R: rgb(255,162,145);
+}
+
 @property --ty {
   syntax: '<length>';
   inherits: false;
@@ -10,39 +15,40 @@
   initial-value: 0deg;
 }
 
-*,
-*::before,
-*::after {
+* {
   box-sizing: border-box;
 }
 
-body, html {
+body {
   margin: 0;
   padding: 0;
-  background-color: rgb(24, 24, 24);
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('img/BG.jpg');
+  background-size: 100vw;
+  background-position: center;
   font-family: SwitchUI;
   color: #3ecceb;
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  transition: .2s;
+  transition: color .2s;
+  /* Voorkomt standaard scrollen, is niet nodig op de meeste apparaten */
+  overflow: hidden;
 }
 
+/* Op telefoon mag het wel, in landschap oriëntatie */
 @media (orientation: landscape) and (max-height: 500px) {
     body {
         overflow-y: auto !important;
     }
 }
 
+/* Custom font */
 @font-face {
   font-family: SwitchUI;
   src: url(font/NINTENDOSWITCHUI.TTF);
 }
 
-body {
-  overflow: hidden;
-}
-
+/* Fade-in bij startup */
 .crossfade {
   width: 100vw;
   height: 100vh;
@@ -57,26 +63,18 @@ body {
   animation-fill-mode: forwards;
 }
 
-.activate-crossfade {
-  animation: crossfade .25s ease-in-out;
-  pointer-events: all;
-}
-
-@keyframes crossfade {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
 @keyframes crossfade-startup {
   0% { opacity: 1; }
   50% { opacity: 1; }
   100% { opacity: 0; }
 }
 
+/* Class die interacties blokkeert */
 .no-interaction {
     pointer-events: none !important;
 }
 
+/* Hoofd class voor de hele console op de website */
 .Switch2 {
   display: flex;
   justify-content: center;
@@ -143,6 +141,24 @@ body {
   }
 }
 
+#Main,
+#Switch2Console {
+  transition: filter .4s;
+}
+
+.shadow {
+  filter: drop-shadow(0px 0px 10vw rgba(255, 255, 255, 0.15));
+}
+
+.shadowLow {
+  filter: drop-shadow(0px 0px 1vw rgba(255, 255, 255, 0.15));
+}
+
+#screen {
+  transition: fill .2s;
+}
+
+/* Scherm-in-scherm */
 .switch2-screen-content {
   padding-left: 2%;
   padding-bottom: 2%;
@@ -158,7 +174,6 @@ body {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 20px;
 }
 
 .screen-unlock {
@@ -184,6 +199,18 @@ body {
   height: 40vw;
 }
 
+/* Standaard kleuren voor de joy cons */
+.left-joycon-color {
+  fill: var(--colors-default-L) !important;
+  transition: fill 0.2s ease;
+}
+
+.right-joycon-color {
+  fill: var(--colors-default-R) !important;
+  transition: fill 0.2s ease;
+}
+
+/* Overlay instellingen */
 .about-overlay,
 .fav-game-overlay,
 .extra-games-overlay,
@@ -405,7 +432,7 @@ img.closeBtn:hover {
   display: flex;
   justify-content: flex-end;
   color: white;
-  transition: .2s;
+  transition: color .2s;
   p {
     font-weight: bold;
     margin: 0;
@@ -414,6 +441,7 @@ img.closeBtn:hover {
   }
 }
 
+/* Blokken op het home menu */
 .block-wrapper {
   display: flex;
   align-items: center;
@@ -464,6 +492,7 @@ img.closeBtn:hover {
   overflow: hidden;
 }
 
+/* Gradient box die achter de content aan het rotaten is, het lijkt dan op een border */
 .block-border::before {
   content: "";
   position: absolute;
@@ -505,7 +534,7 @@ img.closeBtn:hover {
   border-radius: .7vw;
   z-index: 1;
   overflow: hidden;
-  transition: .2s;
+  transition: background-color .2s;
   img {
     width: 97%;
     height: 97%;
@@ -535,6 +564,7 @@ img.closeBtn:hover {
   to { transform: rotate(360deg); }
 }
 
+/* Settings bar onder de blokken */
 .settings-wrapper {
   width: 82%;
   display: flex;
@@ -553,7 +583,7 @@ img.closeBtn:hover {
   width: 100%;
   padding: 1%;
   gap: .5%;
-  transition: all .2s;
+  transition: background-color .2s;
 }
 
 .settings-options {
@@ -566,10 +596,9 @@ img.closeBtn:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: box-shadow 0.2s ease;
   color: white;
   font-size: clamp(0.25rem, -0.3125rem + 1.5vw, 1rem);
-  transition: all .2s;
+  transition: background-color .2s;
   img {
     height: 47%;
   }
@@ -696,7 +725,6 @@ img.closeBtn:hover {
 }
 
 /* SVG Button Animaties */
-
 #home-button2,
 #home-icon {
   transition: fill .5s;
@@ -723,10 +751,14 @@ img.closeBtn:hover {
 #X-button-all,
 #plus-button,
 #minus-button,
-#capture-button-all {
+#capture-button-all,
+#dpad-bottom,
+#dpad-top,
+#dpad-left,
+#dpad-right {
   transform-origin: center;
   transform-box: fill-box;
-  transition: all .2s;
+  transition: scale .2s;
 }
 
 #complete-home-button:hover,
@@ -737,13 +769,21 @@ img.closeBtn:hover {
 #X-button-all:hover,
 #plus-button:hover,
 #minus-button:hover,
-#capture-button-all:hover {
+#capture-button-all:hover,
+#dpad-bottom:hover,
+#dpad-top:hover,
+#dpad-left:hover,
+#dpad-right:hover {
   scale: 0.92;
   cursor: pointer;
 }
 
-/* Settings Buttons Animaties */
+#left-stick:hover,
+#right-stick:hover {
+  cursor: pointer;
+}
 
+/* Settings Buttons Animaties */
 .setting-default-click {
   animation: default-click .3s ease-in-out 1 forwards;
 }
@@ -790,6 +830,7 @@ img.closeBtn:hover {
     }
 }
 
+/* 👀 */
 .easter-egg {
   position: fixed;
   background-color: rgb(43, 43, 43);
@@ -819,10 +860,7 @@ img.closeBtn:hover {
   100% { bottom: -20%; }
 }
 
-#screen {
-  transition: .2s;
-}
-
+/* Dark mode classes */
 .darkmode {
   fill: #eeecee !important;
   background-color: #eeecee !important;
