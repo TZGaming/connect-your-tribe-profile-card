@@ -1,0 +1,974 @@
+:root {
+    --colors-default-L: rgb(116, 235, 255);
+    --colors-default-R: rgb(255, 162, 145);
+}
+
+@property --ty {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+}
+
+@property --rz {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('img/BG.jpg');
+    background-size: 100vw;
+    background-position: center;
+    font-family: SwitchUI;
+    color: #3ecceb;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    transition: color .2s;
+    /* Voorkomt standaard scrollen, is niet nodig op de meeste apparaten */
+    overflow: hidden;
+}
+
+/* Op telefoon mag het wel, in landschap oriëntatie */
+@media (orientation: landscape) and (max-height: 500px) {
+    body {
+        overflow-y: auto !important;
+    }
+}
+
+/* Custom font */
+@font-face {
+    font-family: SwitchUI;
+    src: url(font/NINTENDOSWITCHUI.TTF);
+}
+
+/* Fade-in bij startup */
+.crossfade {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(0, 0, 0);
+    opacity: 1;
+    pointer-events: none;
+    z-index: 999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    animation: crossfade-startup 1s ease-out;
+    animation-fill-mode: forwards;
+}
+
+@keyframes crossfade-startup {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Class die interacties blokkeert */
+.no-interaction {
+    pointer-events: none !important;
+}
+
+/* Hoofd class voor de hele console op de website */
+.Switch2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    transform-origin: center;
+    transform-box: fill-box;
+    translate: 0 0;
+    rotate: 0deg;
+}
+
+.Switch2.stop-animation {
+    translate: 0 0 !important;
+    rotate: 0deg !important;
+}
+
+.Switch2 svg {
+    width: 70vw;
+    display: block;
+    overflow: visible !important;
+}
+
+#switch2-logo {
+    width: 17vw;
+    contain: paint;
+}
+
+.logo-unlock {
+    animation-name: logo-unlock;
+    animation-delay: 0.4s;
+    animation-duration: 0.2s;
+}
+
+@keyframes logo-unlock {
+    0% {
+        scale: 1;
+    }
+
+    /* 50% {
+    scale: 1.05;
+  } */
+    100% {
+        scale: 1;
+    }
+}
+
+#Main,
+#Switch2Console {
+    transition: filter .4s;
+}
+
+#Switch2Console {
+    width: 99vw;
+}
+
+.shadow {
+    filter: drop-shadow(0px 0px 10vw rgba(255, 255, 255, 0.15));
+}
+
+.shadowLow {
+    filter: drop-shadow(0px 0px 1vw rgba(255, 255, 255, 0.15));
+}
+
+#screen {
+    transition: fill .2s;
+}
+
+/* Scherm-in-scherm */
+.switch2-screen-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    align-items: flex-start;
+    /* justify-content: center; */
+}
+
+.screen-unlock {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    will-change: transform;
+    transition: all .2s;
+}
+
+.screen-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10%;
+    width: 43vw;
+    height: 40vw;
+}
+
+.shop-sidebar {
+    background-color: red;
+    width: 25%;
+    height: 100%;
+}
+
+/* Standaard kleuren voor de joy cons */
+.left-joycon-color {
+    fill: var(--colors-default-L) !important;
+    transition: fill 0.2s ease;
+}
+
+.right-joycon-color {
+    fill: var(--colors-default-R) !important;
+    transition: fill 0.2s ease;
+}
+
+/* Overlay instellingen */
+.about-overlay,
+.fav-game-overlay,
+.extra-games-overlay,
+.socials-overlay {
+    position: fixed;
+    display: flex;
+    align-self: center;
+    width: 85%;
+    height: 85%;
+    scale: 0;
+    right: 8%;
+    border-radius: 1vw;
+    padding: 2%;
+    background-color: rgb(43, 43, 43);
+    z-index: 9;
+    flex-direction: row;
+    gap: 3%;
+    opacity: 0;
+    scale: 0;
+    pointer-events: none;
+    color: white;
+    box-shadow: 0px 0px 20px 7px #000000;
+    transition: all .2s ease-in-out;
+
+    img {
+        display: flex;
+        justify-self: flex-end;
+        border-radius: .5vw;
+
+        &.closeBtn {
+            width: 1.5vw;
+            height: 1.5vw;
+            aspect-ratio: 1 / 1;
+            transition: all .2s;
+        }
+    }
+}
+
+.overlay-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-size: 1vw;
+    font-weight: bold;
+
+    video {
+        display: flex;
+        align-self: center;
+        width: 80%;
+        border-radius: .5vw;
+    }
+
+    p {
+        &#gamesDesc {
+            font-size: .75vw;
+            font-weight: normal;
+        }
+    }
+}
+
+.aboutme {
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+    font-weight: normal;
+    font-size: .7vw;
+
+    img {
+        width: 30%;
+    }
+}
+
+.extra-games-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 2%;
+}
+
+.extra-games {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: bold;
+    gap: 2%;
+
+    p {
+        font-size: .7vw;
+    }
+
+    img {
+        width: 95%;
+    }
+}
+
+.social {
+    display: flex;
+    flex-direction: column;
+    gap: 2%;
+    align-items: flex-start;
+}
+
+.social-links {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2%;
+    width: 100%;
+}
+
+.social-links a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.social-links img {
+    cursor: pointer;
+
+    &#discord {
+        width: 2vw;
+    }
+
+    &#youtube,
+    &#github {
+        width: 2vw;
+        padding-right: 1%;
+        transition: .2s;
+    }
+
+    &#nintendo-acc {
+        width: 2vw;
+        cursor: default;
+    }
+}
+
+img.closeBtn:hover {
+    cursor: pointer;
+    scale: 0.9;
+}
+
+.about-overlay.is-active,
+.fav-game-overlay.is-active,
+.extra-games-overlay.is-active,
+.socials-overlay.is-active {
+    opacity: 1;
+    scale: 1;
+    pointer-events: auto;
+}
+
+.unlocked {
+    animation: unlockScreen 3.8s ease-out;
+    animation-fill-mode: forwards;
+    animation-delay: 2s;
+}
+
+.tablet-unlocked {
+}
+
+.tablet-unlocked-click {
+    transform: translateY(var(--ty, 0px)) rotateZ(var(--rz, 0deg));
+
+    animation:
+        unlockJump 0.6s cubic-bezier(.39, .01, 0, .67) 0.4s 1 forwards,
+        unlockRotate 0.6s ease-out 0.4s 1 forwards;
+}
+
+@keyframes unlockJump {
+
+    0%,
+    100% {
+        --ty: 0px;
+    }
+
+    50% {
+        --ty: -70px;
+    }
+}
+
+@keyframes unlockRotate {
+
+    0%,
+    100% {
+        --rz: 0deg;
+    }
+
+    25% {
+        --rz: .5deg;
+    }
+
+    75% {
+        --rz: -.5deg;
+    }
+}
+
+.console-unlocked {
+    transform: translate(-50%, -50%) scale(1.41) !important;
+}
+
+@keyframes unlockScreen {
+    0% {
+        opacity: 1;
+    }
+
+    60% {
+        opacity: 1;
+        background-color: white;
+    }
+
+    90% {
+        opacity: 1;
+        background-color: white;
+    }
+
+    100% {
+        opacity: 0;
+        background-color: white;
+        pointer-events: none;
+    }
+}
+
+@keyframes unlockTablet {
+    0% {
+        width: 70vw;
+    }
+
+    100% {
+        width: 99vw;
+    }
+}
+
+@keyframes unlockConsole {
+    0% {
+        transform: translate(-50%, -50%) scale(1.41);
+    }
+}
+
+.screen-header {
+    font-size: 1vw;
+    width: 95%;
+    display: flex;
+    justify-content: flex-end;
+    color: white;
+    transition: color .2s;
+
+    p {
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
+        letter-spacing: .15vw;
+    }
+}
+
+/* Blokken op het home menu */
+.block-wrapper {
+    display: flex;
+    align-items: center;
+    gap: .5%;
+}
+
+.block-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    position: relative;
+    flex-shrink: 0;
+
+    p {
+        position: absolute;
+        top: -1.25vw;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+}
+
+.block-border.active-block+p,
+.block-content-wrapper:has(.active-block) p {
+    opacity: 1;
+}
+
+.block-title {
+    position: absolute;
+    top: -45px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: .8vw;
+    white-space: nowrap;
+    pointer-events: none;
+    font-weight: bold;
+}
+
+.block-border {
+    width: 10.3vw;
+    height: 10.3vw;
+    aspect-ratio: 1 / 1;
+    border-radius: .7vw;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Gradient box die achter de content aan het rotaten is, het lijkt dan op een border */
+.block-border::before {
+    content: "";
+    position: absolute;
+    width: 14vw;
+    height: 14vw;
+    background-image: linear-gradient(90deg,
+            hsl(259deg 100% 69%) 0%,
+            hsl(265deg 98% 75%) 8%,
+            hsl(270deg 97% 80%) 17%,
+            hsl(275deg 96% 86%) 25%,
+            hsl(279deg 100% 93%) 33%,
+            hsl(257deg 100% 90%) 42%,
+            hsl(234deg 100% 86%) 50%,
+            hsl(217deg 100% 76%) 58%,
+            hsl(204deg 100% 59%) 67%,
+            hsl(205deg 100% 67%) 75%,
+            hsl(205deg 100% 72%) 83%,
+            hsl(205deg 100% 78%) 92%,
+            hsl(204deg 100% 83%) 100%);
+    animation: spin 5s linear infinite;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+}
+
+.block-border.active-block::before {
+    opacity: 1;
+}
+
+.block-content {
+    background-color: #141414;
+    width: 10vw;
+    aspect-ratio: 1 / 1;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: .7vw;
+    z-index: 1;
+    overflow: hidden;
+    transition: background-color .2s;
+
+    img {
+        width: 97%;
+        height: 97%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: .6vw;
+    }
+}
+
+.block-content:hover {
+    cursor: pointer;
+}
+
+.game-click {
+    animation-name: game-click;
+    animation-duration: .2s;
+}
+
+@keyframes game-click {
+    0% {
+        scale: 1;
+    }
+
+    50% {
+        scale: 0.96;
+    }
+
+    100% {
+        scale: 1;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Settings bar onder de blokken */
+.settings-wrapper {
+    width: 82%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    margin-right: 11%;
+}
+
+.settings-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgb(34, 34, 34);
+    border-radius: 40px;
+    width: 100%;
+    padding: 1%;
+    gap: .5%;
+    transition: background-color .2s;
+}
+
+.settings-options {
+    position: relative;
+    z-index: 1;
+    width: 3vw;
+    height: 3vw;
+    border-radius: 100%;
+    background-color: rgb(34, 34, 34);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: clamp(0.25rem, -0.3125rem + 1.5vw, 1rem);
+    transition: background-color .2s;
+
+    img {
+        height: 47%;
+    }
+
+    &.nx-online {
+        background-color: #e40013 !important;
+    }
+
+    &.eshop {
+        img {
+            margin-top: -5%;
+        }
+    }
+
+    &.album {
+        img {
+            height: 38% !important;
+        }
+    }
+
+    &.gameshare {
+        img {
+            height: 44% !important;
+            margin-top: -5%;
+        }
+    }
+
+    &.controller {
+        img {
+            height: 55% !important;
+        }
+    }
+
+    &.virtualcards {
+        img {
+            height: 52% !important;
+        }
+    }
+
+    &.settings {
+        img {
+            height: 57% !important;
+        }
+    }
+
+    &.power {
+        img {
+            height: 57% !important;
+        }
+    }
+}
+
+.settings-options::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, var(--glow-color) 0%, rgba(255, 255, 255, 0) 75%);
+    opacity: 0;
+    z-index: 1;
+    transition: opacity 0.2s ease;
+    border-radius: 50%;
+}
+
+.settings-options:hover {
+    cursor: pointer;
+    background-color: rgb(45, 45, 45);
+}
+
+.settings-options.darkmode-full-white:hover {
+    cursor: pointer;
+    background-color: rgb(245, 245, 245) !important;
+
+    &.nx-online {
+        background-color: #e40013 !important;
+    }
+}
+
+.settings-border {
+    flex-shrink: 0;
+    position: relative;
+    width: 3.3vw;
+    height: 3.3vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+}
+
+.settings-border::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-image: linear-gradient(90deg,
+            hsl(259deg 100% 69%) 0%,
+            hsl(265deg 98% 75%) 8%,
+            hsl(270deg 97% 80%) 17%,
+            hsl(275deg 96% 86%) 25%,
+            hsl(279deg 100% 93%) 33%,
+            hsl(257deg 100% 90%) 42%,
+            hsl(234deg 100% 86%) 50%,
+            hsl(217deg 100% 76%) 58%,
+            hsl(204deg 100% 59%) 67%,
+            hsl(205deg 100% 67%) 75%,
+            hsl(205deg 100% 72%) 83%,
+            hsl(205deg 100% 78%) 92%,
+            hsl(204deg 100% 83%) 100%);
+    animation: spin 5s linear infinite;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+    transform: scale(1.1);
+    z-index: 0;
+    border-radius: 100%;
+}
+
+.settings-border.active-setting::before {
+    opacity: 1;
+}
+
+/* SVG Button Animaties */
+#home-button2,
+#home-icon {
+    transition: fill .5s;
+}
+
+.home-active {
+    fill: #0094d5 !important;
+}
+
+#c,
+#c-button {
+    transition: all .5s;
+}
+
+.vc-active {
+    fill: #d86f22 !important;
+}
+
+#complete-home-button,
+#c-button-all,
+#A-button-all,
+#B-button-all,
+#Y-button-all,
+#X-button-all,
+#plus-button,
+#minus-button,
+#capture-button-all,
+#dpad-bottom,
+#dpad-top,
+#dpad-left,
+#dpad-right {
+    transform-origin: center;
+    transform-box: fill-box;
+    transition: scale .2s;
+}
+
+#complete-home-button:hover,
+#c-button-all:hover,
+#A-button-all:hover,
+#B-button-all:hover,
+#Y-button-all:hover,
+#X-button-all:hover,
+#plus-button:hover,
+#minus-button:hover,
+#capture-button-all:hover,
+#dpad-bottom:hover,
+#dpad-top:hover,
+#dpad-left:hover,
+#dpad-right:hover {
+    scale: 0.92;
+    cursor: pointer;
+}
+
+#left-stick:hover,
+#right-stick:hover {
+    cursor: pointer;
+}
+
+/* Settings Buttons Animaties */
+.setting-default-click {
+    animation: default-click .3s ease-in-out 1 forwards;
+}
+
+@keyframes default-click {
+    0% {
+        scale: 1;
+    }
+
+    50% {
+        scale: 0.9;
+    }
+
+    100% {
+        scale: 1;
+    }
+}
+
+.settings-icn-rotate {
+    animation: settings-cog .3s ease-out 1 forwards;
+}
+
+@keyframes settings-cog {
+    0% {
+        transform: rotateZ(0deg);
+    }
+
+    100% {
+        transform: rotateZ(180deg);
+    }
+}
+
+.settings-options.inner-glow-pulse::before {
+    animation: inner-pulse 0.3s ease-out;
+}
+
+.nx-online {
+    --glow-color: rgba(255, 126, 126, 0.9);
+}
+
+.eshop {
+    --glow-color: rgba(255, 92, 60, 0.9);
+}
+
+.gamechat {
+    --glow-color: rgba(255, 77, 0, 0.9);
+}
+
+.news {
+    --glow-color: rgba(81, 224, 95, 0.9);
+}
+
+.album {
+    --glow-color: rgba(51, 122, 230, 0.9);
+}
+
+.gameshare {
+    --glow-color: rgba(121, 214, 254, 0.9);
+}
+
+.controller,
+.virtualcards,
+.power,
+.settings {
+    --glow-color: rgba(150, 150, 150, 0.9);
+}
+
+@keyframes inner-pulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    50% {
+        opacity: .45;
+        transform: scale(1.1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.2);
+    }
+}
+
+/* 👀 */
+.easter-egg {
+    position: fixed;
+    background-color: rgb(43, 43, 43);
+    bottom: -20%;
+    right: 1%;
+    padding: 1%;
+    border-radius: .7vw;
+
+    p {
+        font-size: 1.2vw;
+        padding: 0;
+        margin: 0;
+    }
+}
+
+.easter-egg.activate {
+    animation-name: SecretMessageActivate;
+    animation-duration: 1s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+}
+
+@keyframes SecretMessageActivate {
+    0% {
+        bottom: -20%;
+    }
+
+    25% {
+        bottom: 2%;
+    }
+
+    75% {
+        bottom: 2%;
+    }
+
+    100% {
+        bottom: -20%;
+    }
+}
+
+/* Dark mode classes */
+.darkmode {
+    fill: #eeecee !important;
+    background-color: #eeecee !important;
+}
+
+.darkmode-text {
+    color: rgb(24, 24, 24) !important;
+}
+
+.darkmode-text2 {
+    color: #3ea6eb !important;
+}
+
+.darkmode-full-white {
+    background-color: white !important;
+}
+
+.darkmode-shadow {
+    box-shadow: 0px 0px 20px 7px #4e4e4e !important;
+}
+
+.inverted-img {
+    filter: invert(100%);
+}

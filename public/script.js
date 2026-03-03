@@ -35,6 +35,8 @@ let socialsOverlay = document.querySelector('.socials-overlay')
 let overlayCloseBtn = document.querySelectorAll('.closeBtn');
 let SecretMessage = document.querySelector('.easter-egg')
 
+let eShopBtn = document.querySelector('.eshop')
+
 // Boolean voor als de boot sequence klaar is
 let isBooting = false;
 
@@ -407,6 +409,12 @@ allSettings.forEach(option => {
             }
         }, 300);
     });
+});
+
+eShopBtn.addEventListener('click', function () {
+    setTimeout(() => {
+        window.location.href = '/shop/';
+    }, 350);
 });
 
 // Blokkeer alle interacties achter de overlay als hij is geopend

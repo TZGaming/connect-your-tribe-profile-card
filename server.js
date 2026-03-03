@@ -55,9 +55,13 @@ app.get('/', async function (request, response) {
    response.render('index.liquid', { person: personData });
 })
 
-app.get('/oefening/', async function (request, response) {
-   // Render index.liquid uit de Views map en geef de opgehaalde data mee, in een variabele genaamd person
-   response.render('oefening.liquid', {person: personResponseJSON.data})
+// app.get('/oefening/', async function (request, response) {
+//    // Render index.liquid uit de Views map en geef de opgehaalde data mee, in een variabele genaamd person
+//    response.render('oefening.liquid', {person: personResponseJSON.data})
+// })
+
+app.get('/shop/', async function (request, response) {
+   response.render('shop.liquid')
 })
 
 
